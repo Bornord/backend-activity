@@ -1,10 +1,18 @@
 //package imports
 const express = require('express');
+const mongoose = require('mongoose');
+const app = express();
+const Product = require('./models/product');
 
 // config serveur
-const app = express();
-app.use(express.json());
 
+mongoose.connect('mongodb+srv://Bornord:Bornord56@cluster0.9i3ay.mongodb.net/myFirstDatabase?retryWrites=true&w=majority',
+{ useNewUrlParser: true,
+    useUnifiedTopology: true })
+  .then(() => console.log('Connexion à MongoDB réussie !'))
+  .catch(() => console.log('Connexion à MongoDB échouée !'));
+
+app.use(express.json());
 // config des autorisations
 app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -15,7 +23,7 @@ app.use((req, res, next) => {
 
 // instruction pour debug
 app.use((req,res,next) => {
-    console.log('instruction reçue');
+    console.log('instruction'+ ' ' + 'reçue');
     /*
     res.status(200).json({
         msg: 'bien reçu, le traitement va commencer !'
@@ -24,28 +32,43 @@ app.use((req,res,next) => {
     next();
 });
 
-
-app.get('/api/products',(req,res,next) => {
-    const products = [
-        {
-            name: "p1",
-            description: 'd1',
-            price: 10,
-            inStock: true,
-        },{
-            name: 'p2',
-            description: 'd2',
-            price: 20,
-            inStock: false,
-        }
-    ];
-    res.status(300).json(products);
-});
-
 app.post('/api/products',(req,res,next) => {
     delete req.body._id;
-    res.status(201).json({msg: 'produit créé !'});
+    const product = new Product({
+        ...req.body
+    });
+    product.save()
+        .then(product => 
+            res.status(201).json({product}))
+        .catch(error => res.status(400).json({error}));
+})
+
+app.get('/api/products/:id',(req,res,next) => {
+    console.log('test de numéro: '+req.params.id);
+    Product.findOne({_id: req.params.id})
+        .then(product => {
+            res.status(200).json(product);
+        })
+        //.then(product => res.status(200).json(product))
+        .catch(error => res.status(400).json({error}));
 });
 
+app.put('/api/products/:id',(req,res,next) => {
+    Product.updateOne({_id:req.params.id},{...req.body,_id:req.params.id})
+        .then(() => res.status(200).json({ message: 'Modified!' }))
+        .catch(error => res.status(400).json({error}));
+});
+
+app.delete('/api/products/:id',(req,res,next) => {
+    Product.deleteOne({_id:req.params.id})
+        .then(() => res.status(200).json({ message: 'Deleted!' }))
+        .catch(error => res.status(400).json({error}));
+});
+
+app.get('/api/products',(req,res,next) => {
+    Product.find()
+        .then(products => res.status(200).json({products}))
+        .catch(error => res.status(200).json({error}));
+})
 
 module.exports = app;

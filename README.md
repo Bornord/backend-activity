@@ -9,10 +9,11 @@ npm install _
 => À CHAQUE FOIS et cela inclut :
     - Démarrage serveur_frontend
     - Import package express
+    - Import package MongoDB
 
 # R2 : construction d'un json avec plusieurs éléments
 Bon exemple :
-    // création de l'objet
+    // création de l'objet statique
     const products = [
         {
             name: "p1",
