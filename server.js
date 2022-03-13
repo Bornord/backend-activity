@@ -4,7 +4,8 @@ const app = require('./app.js');
 
 // config 
 const port = process.env.PORT || 3000;
+app.set('port',port)
 const server = http.createServer(app)
 
-http.Server.listener(port);
+server.listen(port);
 

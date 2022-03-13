@@ -13,10 +13,11 @@ app.use((req, res, next) => {
   });
 
 app.use((req,res,next) => {
-    console.log(reçu);
+    console.log('instruction reçue');
     res.status(200).json({
-        msg: 'bien reçu !'
+        msg: 'bien reçu, le traitement va commencer !'
     });
+    next();
 });
 
 module.exports = app;
