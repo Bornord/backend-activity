@@ -1,5 +1,4 @@
 ### backend-activity
-Exercice backend openClassroom
 
 ## remarques
 
